@@ -16,6 +16,9 @@ from utils import load_adj
 from metrics import RMSE, MAE, MSE
 from STSSDL import STSSDL
 import random
+import wandb
+wandb.login(key = 'c18f56f87b92b4296251b454a8556397e6153841')
+
 class ContrastiveLoss():
     def __init__(self, contra_loss='triplet', mask=None, temp=1.0, margin=0.5):
         self.infonce = contra_loss in ['infonce']
@@ -431,6 +434,7 @@ data['test_loader'] = torch.utils.data.DataLoader(
 )
 
 def main():
+    wandb.init(project="ST-SSDL", name=f"{args.dataset}_{model_name}")
     logger.info(args.dataset, 'training and testing started', time.ctime())
     logger.info('train xs.shape, ys.shape', data['x_train'].shape, data['y_train'].shape)
     logger.info('val xs.shape, ys.shape', data['x_val'].shape, data['y_val'].shape)
