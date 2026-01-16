@@ -4,7 +4,7 @@
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate bl-stssdl
 
-# Change to ST-SSDL directory (where PEMS data folders are located)
+# Change to ST-SSDL directory (data is now in ../data folder - shared between models)
 cd /home/cds/ltkien/STLLM-baseline/ST-SSDL
 
 python generate_training_data_his_PEMS.py --dataset PEMS04

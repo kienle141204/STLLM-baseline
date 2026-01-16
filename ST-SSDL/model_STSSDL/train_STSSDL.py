@@ -164,6 +164,7 @@ def traintest_model():
         val_loss, _, _ = evaluate(model, 'val')
         message = 'Epoch [{}/{}] ({}) train_loss: {:.4f}, train_mae_loss: {:.4f}, train_contra_loss: {:.4f}, train_deviation_loss: {:.4f}, val_loss: {:.4f}, lr: {:.6f}, {:.2f}s'.format(epoch_num + 1, args.epochs, batches_seen, train_loss, train_mae_loss, train_contra_loss, train_deviation_loss, val_loss, optimizer.param_groups[0]['lr'], (end_time2 - start_time))
         logger.info(message)
+        wandb.log({'train_loss': train_loss, 'val_loss': val_loss})
         
         test_loss, _, _ = evaluate(model, 'test')
         logger.info("\n")
@@ -235,8 +236,8 @@ num_nodes_dict={
     "PEMSD7M": 228,
 }
 if args.dataset == 'METRLA':
-    data_path = f'../{args.dataset}/metr-la.h5'
-    adj_mx_path = f'../{args.dataset}/adj_mx.pkl'
+    data_path = f'../../data/{args.dataset}/metr-la.h5'
+    adj_mx_path = f'../../data/{args.dataset}/adj_mx.pkl'
     args.num_nodes = 207
     args.use_STE=True
     rand_seed=random.randint(0, 1000000)# 31340
@@ -250,8 +251,8 @@ if args.dataset == 'METRLA':
     args.adaptive_embedding_dim=0
     
 elif args.dataset == 'PEMSBAY':
-    data_path = f'../{args.dataset}/pems-bay.h5'
-    adj_mx_path = f'../{args.dataset}/adj_mx_bay.pkl'
+    data_path = f'../../data/{args.dataset}/pems-bay.h5'
+    adj_mx_path = f'../../data/{args.dataset}/adj_mx_bay.pkl'
     args.num_nodes = 325
     args.use_STE=True
     args.cl_decay_steps = 8000
@@ -265,8 +266,8 @@ elif args.dataset == 'PEMSBAY':
     args.adaptive_embedding_dim=0
 
 elif args.dataset == 'PEMS04':
-    data_path = f'../{args.dataset}/{args.dataset}.npz'
-    adj_mx_path = f'../{args.dataset}/adj_{args.dataset}_distance.pkl'
+    data_path = f'../../data/{args.dataset}/{args.dataset}.npz'
+    adj_mx_path = f'../../data/{args.dataset}/adj_{args.dataset}_distance.pkl'
     args.num_nodes = num_nodes_dict[args.dataset]
     rand_seed=random.randint(0, 1000000)# 31340
     args.seed=610958
@@ -276,7 +277,7 @@ elif args.dataset == 'PEMS04':
     args.epochs=200
     args.steps=[50, 100]
     args.weight_decay=0
-    args.max_grad_norm=0
+    args.max_grad_norm=5
     args.rnn_units=32
     args.prototype_num=20
     args.prototype_dim=64
@@ -292,8 +293,8 @@ elif args.dataset == 'PEMS04':
 
     
 elif args.dataset == 'PEMS07':
-    data_path = f'../{args.dataset}/{args.dataset}.npz'
-    adj_mx_path = f'../{args.dataset}/adj_{args.dataset}_distance.pkl'
+    data_path = f'../../data/{args.dataset}/{args.dataset}.npz'
+    adj_mx_path = f'../../data/{args.dataset}/adj_{args.dataset}_distance.pkl'
     args.num_nodes = num_nodes_dict[args.dataset]
     rand_seed=random.randint(0, 1000000)# 31340
     args.patience=20
@@ -301,7 +302,7 @@ elif args.dataset == 'PEMS07':
     args.lr=0.001
     args.steps=[50, 100]
     args.weight_decay=0
-    args.max_grad_norm=0
+    args.max_grad_norm=5
     args.rnn_units=64
     args.prototype_num=20
     args.prototype_dim=64
@@ -315,8 +316,8 @@ elif args.dataset == 'PEMS07':
     args.tod_embed_dim=16 
     args.adaptive_embedding_dim=0
 elif args.dataset == 'PEMS08':
-    data_path = f'../{args.dataset}/{args.dataset}.npz'
-    adj_mx_path = f'../{args.dataset}/adj_{args.dataset}_distance.pkl'
+    data_path = f'../../data/{args.dataset}/{args.dataset}.npz'
+    adj_mx_path = f'../../data/{args.dataset}/adj_{args.dataset}_distance.pkl'
     args.num_nodes = num_nodes_dict[args.dataset]
     args.use_STE=True
     args.patience=20
@@ -338,8 +339,8 @@ elif args.dataset == 'PEMS08':
     args.adaptive_embedding_dim=0
     
 elif args.dataset == 'PEMSD7M':
-    data_path = f'../{args.dataset}/{args.dataset}.npz'
-    adj_mx_path = f'../{args.dataset}/adj_{args.dataset}_distance.pkl'
+    data_path = f'../../data/{args.dataset}/{args.dataset}.npz'
+    adj_mx_path = f'../../data/{args.dataset}/adj_{args.dataset}_distance.pkl'
     args.num_nodes = num_nodes_dict[args.dataset]
     rand_seed=random.randint(0, 1000000)# 31340
     args.seed=119089
@@ -348,7 +349,7 @@ elif args.dataset == 'PEMSD7M':
     args.lr=0.001
     args.steps=[50, 100]
     args.weight_decay=0
-    args.max_grad_norm=0
+    args.max_grad_norm=5
     args.rnn_units=32
     args.prototype_num=16
     args.prototype_dim=64
@@ -409,7 +410,7 @@ if torch.cuda.is_available(): torch.cuda.manual_seed(args.seed)
 
 data = {}
 for category in ['train', 'val', 'test']:
-    cat_data = np.load(os.path.join(f'../{args.dataset}', category + 'his.npz'))
+    cat_data = np.load(os.path.join(f'../../data/{args.dataset}', category + 'his.npz'))
     data['x_' + category] = np.nan_to_num(cat_data['x']) if True in np.isnan(cat_data['x']) else cat_data['x']
     data['y_' + category] = np.nan_to_num(cat_data['y']) if True in np.isnan(cat_data['y']) else cat_data['y']
 scaler = StandardScaler(mean=data['x_train'][..., 0].mean(), std=data['x_train'][..., 0].std())

@@ -1,0 +1,16 @@
+# Core dependencies
+torch>=2.3.0
+numpy>=1.26.3
+pandas>=2.0.0
+
+# PyTorch Geometric for GCN layers
+torch-geometric>=2.4.0
+
+# Scientific computing
+scipy>=1.11.0
+
+# Time series similarity
+fastdtw>=0.3.4
+
+# Progress bar
+tqdm>=4.65.0

@@ -86,6 +86,7 @@ class TimeEncode(nn.Module):
             bn_decay=bn_decay)
     def forward(self, x, num_vertex, num_his):
         x = x.float()
+        input_device = x.device
         x = self.ff(x)
         x = torch.sin(x)
         x = x.unsqueeze(dim = 2)
@@ -93,8 +94,7 @@ class TimeEncode(nn.Module):
         Pred = x[:, num_his:]
         His = self.FC_his(His)
         Pred = self.FC_Pred(Pred)
-        add_vertex = torch.zeros(1,1,num_vertex,1)
-        add_vertex = add_vertex.to(device)
+        add_vertex = torch.zeros(1,1,num_vertex,1, device=input_device)
         His = His + add_vertex
         Pred = Pred + add_vertex
         del x, add_vertex
@@ -131,17 +131,17 @@ class TEmbedding(nn.Module):
             bn_decay=bn_decay)
         
     def forward(self, X, SE, T, num_vertex, num_his):
-        dayofweek = torch.empty(X.shape[0], X.shape[1], 7)
-        timeofday = torch.empty(X.shape[0], X.shape[1], T)
+        input_device = X.device
+        dayofweek = torch.empty(X.shape[0], X.shape[1], 7, device=input_device)
+        timeofday = torch.empty(X.shape[0], X.shape[1], T, device=input_device)
         for i in range(X.shape[0]): # shape[0] = batch_size
             dayofweek[i] = F.one_hot(X[..., 0][i].to(torch.int64) % 7, 7) 
         for j in range(X.shape[0]):
             timeofday[j] = F.one_hot(X[..., 1][j].to(torch.int64) % T, T)
         X = torch.cat((timeofday, dayofweek), dim=-1) # (batch_size, num_his+num_pred, 7+T)
         X = X.unsqueeze(dim = 2)
-        X = X.to(device) # (batch_size, num_his+num_pred, 1, D)
-        add_vertex = torch.zeros(1,1,num_vertex,1)
-        add_vertex = add_vertex.to(device)
+        # X is already on the correct device
+        add_vertex = torch.zeros(1,1,num_vertex,1, device=input_device)
         X = X + add_vertex
         X = self.FC(X)
         X = torch.sin(X)
@@ -195,7 +195,7 @@ class Trend_Seasonal_Decomposition(nn.Module):
     def forward(self, X, STEmbedding):
         trend = torch.mul(X, STEmbedding)
         seasonal = X-trend
-        zero_shape=torch.zeros_like(X).cuda()
+        zero_shape=torch.zeros_like(X)
         vector = zero_shape+self.vector
         result = vector*trend+(1-vector)*seasonal
         del trend, seasonal
@@ -264,10 +264,10 @@ class MAB(nn.Module):
                 value = value.permute(0, 2, 1, 3)
                 mask=mask.permute(0,2,1,3)
             if mask.shape==query.shape:
-                set_mask=torch.ones_like(key).cuda()
+                set_mask=torch.ones_like(key)
                 mask = torch.matmul(mask,set_mask.transpose(2,3))
             elif mask.shape==key.shape:
-                set_mask=torch.ones_like(query).cuda()
+                set_mask=torch.ones_like(query)
                 mask = torch.matmul(set_mask,mask.transpose(2,3))
             attention = torch.matmul(query, key.transpose(2, 3))
             attention /= (self.d ** 0.5)
@@ -392,7 +392,7 @@ class GRUEncoder(nn.Module):
         
     def forward(self,x):
         B,T,N,F = x.shape
-        hidden_state = torch.zeros([B,N,F]).to(device)
+        hidden_state = torch.zeros([B,N,F], device=x.device)
         output = []
         for i in range(T):
             gx = x[:,i,:,:]
@@ -525,10 +525,10 @@ class first_model(nn.Module):
                        bn_decay=bn_decay)
 
         # dynamic GCN
-        self.nodevec_p1 = nn.Parameter(torch.randn(int(1440/time_slice_size), D).to(device), requires_grad=True).to(device)
-        self.nodevec_p2 = nn.Parameter(torch.randn(int(data_config['num_of_vertices']), D).to(device), requires_grad=True).to(device)
-        self.nodevec_p3 = nn.Parameter(torch.randn(int(data_config['num_of_vertices']), D).to(device), requires_grad=True).to(device)
-        self.nodevec_pk = nn.Parameter(torch.randn(D, D, D).to(device), requires_grad=True).to(device)
+        self.nodevec_p1 = nn.Parameter(torch.randn(int(1440/time_slice_size), D), requires_grad=True)
+        self.nodevec_p2 = nn.Parameter(torch.randn(int(data_config['num_of_vertices']), D), requires_grad=True)
+        self.nodevec_p3 = nn.Parameter(torch.randn(int(data_config['num_of_vertices']), D), requires_grad=True)
+        self.nodevec_pk = nn.Parameter(torch.randn(D, D, D), requires_grad=True)
         self.GCN = gcn(D,D,order = self.order)
         
     def dgconstruct(self, time_embedding, source_embedding, target_embedding, core_embedding):

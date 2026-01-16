@@ -151,9 +151,9 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, choices=['PEMS04','PEMS07', 'PEMS08'], default='PEMS08', help='which dataset to run')
-    parser.add_argument("--output_dir", type=str, default="PEMS04/", help="Output directory.")
-    parser.add_argument("--traffic_df_filename", type=str, default="{}/{}.npz", help="Raw traffic readings.")
+    parser.add_argument("--output_dir", type=str, default="../data/PEMS04/", help="Output directory.")
+    parser.add_argument("--traffic_df_filename", type=str, default="../data/{}/{}.npz", help="Raw traffic readings.")
     args = parser.parse_args()
-    args.output_dir = f'{args.dataset}/'
+    args.output_dir = f'../data/{args.dataset}/'
     args.traffic_df_filename = args.traffic_df_filename.format(args.dataset, args.dataset)
     main(args)

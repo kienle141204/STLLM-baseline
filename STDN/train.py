@@ -16,6 +16,8 @@ import math
 import torch.nn as nn
 from utils import mae_rmse_mape, count_parameters, get_normalized_adj, cal_lape, get_adj_from_csv, calculate_normalized_laplacian, get_adj_from_npy, add_data
 from graph_utils import loadGraph
+import wandb
+wandb.login(key = 'c18f56f87b92b4296251b454a8556397e6153841')
 
 warnings.filterwarnings('ignore')
 
@@ -24,6 +26,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--config", default='conf/PEMSD4_1dim_12.conf', type=str,
                      help="configuration file path") 
 args = parser.parse_args()
+
+wandb.init(project="STDN", name=f"STDN_{args.config}")
+
 config = configparser.ConfigParser()
 print('Read configuration file: %s' % (args.config))
 print('>>>>>>>  configuration   <<<<<<<')
