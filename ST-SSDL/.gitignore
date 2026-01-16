@@ -7,7 +7,7 @@ METRLA/*
 LA-embedding-Finetune/ME*
 *.pt
 *.zip
-*.npz
+# *.npz
 exp-save/
 save-*/
 Rebuttal.md
