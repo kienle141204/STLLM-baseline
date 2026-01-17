@@ -9,6 +9,9 @@ wandb
 **/testhis.npz
 **/trainhis.npz
 **/valhis.npz
+**/experiments/
+*_astcgn.npz
+*_astgcn.npz
 
 # Ignore STDN internal data folder (use shared data folder instead)
 STDN/data/

@@ -277,7 +277,7 @@ elif args.dataset == 'PEMS04':
     args.epochs=200
     args.steps=[50, 100]
     args.weight_decay=0
-    args.max_grad_norm=5
+    args.max_grad_norm=0
     args.rnn_units=32
     args.prototype_num=20
     args.prototype_dim=64
@@ -302,7 +302,7 @@ elif args.dataset == 'PEMS07':
     args.lr=0.001
     args.steps=[50, 100]
     args.weight_decay=0
-    args.max_grad_norm=5
+    args.max_grad_norm=0
     args.rnn_units=64
     args.prototype_num=20
     args.prototype_dim=64
@@ -349,7 +349,7 @@ elif args.dataset == 'PEMSD7M':
     args.lr=0.001
     args.steps=[50, 100]
     args.weight_decay=0
-    args.max_grad_norm=5
+    args.max_grad_norm=0
     args.rnn_units=32
     args.prototype_num=16
     args.prototype_dim=64

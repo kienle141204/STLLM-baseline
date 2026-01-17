@@ -16,6 +16,8 @@ from torch.optim.lr_scheduler import ExponentialLR
 import nni
 import random
 import string
+import wandb
+wandb.login(key = 'c18f56f87b92b4296251b454a8556397e6153841')
 
 random_str = lambda : ''.join(random.sample(string.ascii_letters + string.digits, 6))
 
@@ -177,6 +179,7 @@ def Train(args,mylogger,model,prompt_prefix,scaler):
         train_loss_line['y'].append(train_loss)
 
         mylogger.info(f"epoch {epoch} train_loss:{train_loss}")
+        wandb.log({"train_loss": train_loss})
 
         if epoch % val_epoch == 0:
 
@@ -194,6 +197,7 @@ def Train(args,mylogger,model,prompt_prefix,scaler):
             if args.nni:
                 nni.report_intermediate_result(val_loss)
             mylogger.info(f"[Validation] epoch {epoch} val_loss:{val_loss}")
+            wandb.log({"val_loss": val_loss})
             scheduler.step(val_loss)
 
         if epoch % test_epoch == 0:
@@ -297,6 +301,8 @@ if __name__ == '__main__':
     mylogger = getlogger(logpath)
 
     mylogger.info(args)
+
+    wandb.init(project="STD-PLM", name=f"{args.dataset}")
 
     model = STALLM(basemodel=basemodel, sample_len= args.sample_len, output_len = output_len, \
                     input_dim = args.input_dim , output_dim = args.output_dim , \

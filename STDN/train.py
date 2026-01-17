@@ -229,6 +229,8 @@ for epoch_num in range(0, max_epoch):
     val_loss /= num_val
     end_val = time.time()
 
+    wandb.log({"train_loss": train_loss, "val_loss": val_loss})
+
     train_time_epochs.append(end_train - start_train)
     val_time_epochs.append(end_val - start_val)
 

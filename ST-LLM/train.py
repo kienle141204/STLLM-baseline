@@ -9,6 +9,8 @@ from util import *
 import random
 from model.ST_LLM import ST_LLM
 from ranger21 import Ranger
+import wandb
+wandb.login(key = 'c18f56f87b92b4296251b454a8556397e6153841')
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:21'
 
 parser = argparse.ArgumentParser()
@@ -111,6 +113,7 @@ def seed_it(seed):
 def main():
     seed_it(6666)
     data = args.data
+    wandb.init(project="ST-LLM", name=f"{args.data}")
 
     if args.data == "bike_drop":
         args.data = "data//" + args.data
@@ -259,6 +262,8 @@ def main():
             log.format(i, mvalid_loss, mvalid_rmse, mvalid_mape, mvalid_wmape),
             flush=True,
         )
+
+        wandb.log({"train_loss": mtrain_loss, "val_loss": mvalid_loss})
 
         if mvalid_loss < loss:
             print("###Update tasks appear###")
